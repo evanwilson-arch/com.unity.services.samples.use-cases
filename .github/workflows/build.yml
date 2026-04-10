@@ -1,0 +1,33 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject Unity Services Config
+        env:
+          UNITY_SERVICES_ENVIRONMENT_ID: ${{ secrets.UNITY_SERVICES_ENVIRONMENT_ID }}
+          UNITY_SERVICES_ENVIRONMENT_NAME: ${{ secrets.UNITY_SERVICES_ENVIRONMENT_NAME }}
+        run: |
+          CONFIG_PATH="GemHunterMatch3/ProjectSettings/Packages/com.unity.services.core/Settings.json"
+          if [ -f "$CONFIG_PATH" ]; then
+            echo "Injecting Unity Services environment variables into $CONFIG_PATH"
+            jq --arg id "$UNITY_SERVICES_ENVIRONMENT_ID" \
+               --arg name "$UNITY_SERVICES_ENVIRONMENT_NAME" \
+               '.EnvironmentId = $id | .EnvironmentName = $name' \
+               "$CONFIG_PATH" > "${CONFIG_PATH}.tmp" && mv "${CONFIG_PATH}.tmp" "$CONFIG_PATH"
+          else
+            echo "Warning: $CONFIG_PATH not found, skipping injection."
+          fi
+
+      - name: Build Unity Project
+        run: |
+          echo "Unity build step would go here (e.g. using GameCi Actions)"
