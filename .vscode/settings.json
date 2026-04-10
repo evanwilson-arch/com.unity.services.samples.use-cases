@@ -1,0 +1,8 @@
+{
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "main"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/codespace/.vscode-remote/extensions/ms-security.ms-sentinel-2.0.2/python"
+    ]
+}
